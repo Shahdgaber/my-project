@@ -100,3 +100,43 @@ function result = parabolicSolver(eq1, eq2, eq3, eq4)
     end
     result = u;
 end
+
+% Hyperbolic solver function
+function result = hyperbolicSolver(eq1, eq2, eq3, eq4)
+    % Wave equation solver using finite difference method
+    L = 1; % Length of the domain
+    nx = 100; % Number of spatial grid points
+    dx = L / (nx - 1); % Grid spacing
+    nt = 100; % Number of time steps
+    dt = 0.01; % Time step size
+    c = 1; % Wave speed
+    % Initialize solution array
+    u = zeros(nx, nt + 1);
+    % Set initial condition
+    x = linspace(0, L, nx);
+    u(:, 1) = sin(pi * x);
+    % Implement finite difference method for wave equation
+    for t = 1:nt
+        for i = 2:nx-1
+            u(i, t+1) = 2 * u(i, t) - u(i, t-1) + (c * dt / dx)^2 * (u(i+1, t) - 2 * u(i, t) + u(i-1, t));
+        end
+    end
+    result = u;
+end
+
+% ODE solver function
+function result = odeSolver(eq1, eq2, eq3, eq4)
+    % Euler's method for solving a first-order ODE
+    f = str2func(['@(t,u) ', char(eq4)]); % Convert equation to function handle
+    tspan = [0, 1]; % Time span
+    u0 = 1; % Initial condition
+    h = 0.01; % Step size
+    t = tspan(1):h:tspan(2); % Time vector
+    u = zeros(size(t)); % Solution vector
+    u(1) = u0; % Initial condition
+    % Euler method iteration
+    for i = 2:length(t)
+        u(i) = u(i-1) + h * f(t(i-1), u(i-1));
+    end
+    result = [t', u']; % Return the result
+end
